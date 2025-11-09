@@ -20,6 +20,10 @@
     box-sizing: border-box;
 }
 
+:root {
+  --nav-height: 100px; /* adjust to match your navbar height */
+}
+
 body {
     font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
     line-height: 1.6;
@@ -34,19 +38,30 @@ body {
 }
 
 /* Navigation */
+
 .navbar {
-    background-color: var(--color-white);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 1rem 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--nav-height);
+  z-index: 1000;
+  background-color: var(--color-white);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 0; /* remove extra vertical padding so height matches exactly */
 }
 
+/* Keep inner container vertical centering if you want smaller padding inside */
 .navbar .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+main {
+  padding-top: var(--nav-height);
 }
 
 .logo {
@@ -59,9 +74,28 @@ body {
 }
 
 .logo img {
-    height: 50px;
-    width: 50px;
+    height: 75px;
+    width: auto;
     object-fit: contain;
+}
+
+.logo #logoText {
+    height: 40px;
+    width: auto;
+}
+
+@media screen and (max-width: 768px) {
+    .logo {
+        gap: 10px;
+    }
+    
+    .logo img {
+        height: 50px;
+    }
+    
+    .logo #logoText {
+        height: 25px;
+    }
 }
 
 .nav-links {
@@ -81,6 +115,16 @@ body {
     color: var(--color-primary);
 }
 
+@media screen and (max-width: 768px) {
+    .nav-links {
+        gap: 1rem;
+    }
+    
+    .nav-links a {
+        font-size: 0.9rem;
+    }
+}
+
 /* Hero Section */
 .hero {
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
@@ -94,6 +138,28 @@ body {
     margin-bottom: 1rem;
     font-weight: 700;
 }
+
+@media screen and (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    
+    .hero {
+        padding: 60px 0;
+    }
+}
+
+
+@media screen and (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    
+    .hero {
+        padding: 60px 0;
+    }
+}
+
 
 .hero-content p {
     font-size: 1.25rem;

@@ -13,12 +13,12 @@ document.getElementById('contactForm').addEventListener('submit', async (e) => {
     };
     
     // Basic validation
-    if (!formData.full_name || !formData.phone || !formData.message) {
+    if (!formData.full_name || !formData.message || (!formData.phone && !formData.email)) {
         formMessage.textContent = 'Please fill in all required fields.';
         formMessage.className = 'form-message error';
         return;
     }
-    
+
     // Disable submit button
     submitBtn.disabled = true;
     submitBtn.textContent = 'Submitting...';

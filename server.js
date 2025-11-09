@@ -56,7 +56,7 @@ app.post('/api/submit', (req, res) => {
 app.post('/api/admin/login', (req, res) => {
   const { username, password } = req.body;
 
-  if (username === 'Amir' && password === 'amireli21') {
+  if (username === 'username' && password === 'password') {
     res.json({ success: true });
   } else {
     res.status(401).json({ success: false, message: 'Invalid credentials' });
@@ -68,7 +68,7 @@ app.get('/api/admin/submissions', (req, res) => {
   const { auth } = req.headers;
 
   // Simple auth check (in production, use proper session management)
-  if (auth !== 'Amir:amireli21') {
+  if (auth !== 'username:password') {
     return res.status(401).json({ success: false, message: 'Unauthorized' });
   }
 

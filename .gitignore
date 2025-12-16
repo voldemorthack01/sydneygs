@@ -11,6 +11,8 @@ data/
 # Environment variables
 .env
 .env.local
+.env.render
+
 # # .env.test
 
 # Logs

@@ -29,6 +29,10 @@ const logger = winston.createLogger({
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust Proxy (Required for Render/Heroku/Nginx)
+// This ensures 'secure' cookies work behind a load balancer
+app.set('trust proxy', 1);
+
 // Security & Performance Middleware
 app.use(helmet({
   contentSecurityPolicy: {
@@ -208,8 +212,8 @@ if (SELF_URL && SELF_URL.startsWith('http')) {
       logger.error('Self-ping error', { error: e.message });
     });
   }
-  // Schedule ping every 10 mins
-  setInterval(pingSelf, 10 * 60 * 1000);
+  // Schedule ping every 60 mins
+  setInterval(pingSelf, 60 * 60 * 1000);
 }
 
 // 404 Handler

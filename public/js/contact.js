@@ -1,9 +1,9 @@
 document.getElementById('contactForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const formMessage = document.getElementById('formMessage');
     const submitBtn = e.target.querySelector('button[type="submit"]');
-    
+
     // Get form data
     const formData = {
         full_name: document.getElementById('full_name').value.trim(),
@@ -11,7 +11,7 @@ document.getElementById('contactForm').addEventListener('submit', async (e) => {
         email: document.getElementById('email').value.trim(),
         message: document.getElementById('message').value.trim()
     };
-    
+
     // Basic validation
     if (!formData.full_name || !formData.message || (!formData.phone && !formData.email)) {
         formMessage.textContent = 'Please fill in all required fields.';
@@ -22,7 +22,7 @@ document.getElementById('contactForm').addEventListener('submit', async (e) => {
     // Disable submit button
     submitBtn.disabled = true;
     submitBtn.textContent = 'Submitting...';
-    
+
     try {
         const response = await fetch('/api/submit', {
             method: 'POST',
@@ -31,15 +31,21 @@ document.getElementById('contactForm').addEventListener('submit', async (e) => {
             },
             body: JSON.stringify(formData)
         });
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
             formMessage.textContent = 'Thank you! Your message has been received. We will contact you soon.';
             formMessage.className = 'form-message success';
             e.target.reset();
         } else {
-            formMessage.textContent = result.message || 'An error occurred. Please try again.';
+            if (result.errors) {
+                // Show first validation error or a summary
+                const msg = result.errors.map(err => err.msg).join(', ');
+                formMessage.textContent = 'Please fix: ' + msg;
+            } else {
+                formMessage.textContent = result.message || 'An error occurred. Please try again.';
+            }
             formMessage.className = 'form-message error';
         }
     } catch (error) {

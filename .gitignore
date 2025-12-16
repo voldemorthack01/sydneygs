@@ -1,15 +1,17 @@
 # Dependencies
 node_modules/
-package-lock.json
+# package-lock.json # Keep this for consistent installs
 
 # Database
-data/*.db
-data/*.db-shm
-data/*.db-wal
+data/
+*.db
+*.db-shm
+*.db-wal
 
 # Environment variables
 .env
 .env.local
+# # .env.test
 
 # Logs
 logs
@@ -25,3 +27,12 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Build/Test Artifacts
+coverage/
+changes.diff
+patches.diff
+patches.zip
+audit-report.json
+hash.txt
+generate_hash.js

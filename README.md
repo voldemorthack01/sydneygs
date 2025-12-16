@@ -1,124 +1,126 @@
-# Sydney Gold Star Group Website
+# Sydney Gold Star Group - Website (v2)
 
-Professional painting services website for Sydney Gold Star Group (sydneygs.com).
+Professional painting services website for Sydney Gold Star Group. Features a gallery, contact form, and admin dashboard for quote management.
 
-## Features
+![Sydney GS Logo](public/images/Logos/Logo.png)
+*(Note: Screenshot/Logo placeholder)*
 
-- **Home Page**: Hero section, services overview, client reviews
-- **Gallery**: Responsive image grid for project showcase
-- **Contact/Quote Page**: Lead capture form with SQLite storage
-- **Admin Panel**: Private login system for viewing submissions
+## 🚀 Features
+- **Responsive Design**: Modern, mobile-friendly interface.
+- **Quote Submission**: Secure contact form with validation.
+- **Admin Dashboard**: Secure login to view and manage leads.
+- **SEO Optimized**: Meta tags, Open Graph, Sitemap, and formatted URLs.
+- **Secure**: Helmet headers, Rate Limiting, Bcrypt hashing, HttpOnly cookies.
+- **Performant**: Gzip compression, static caching, and optimized assets.
 
-## Technology Stack
+## 📂 File Structure
+```
+.
+├── data/               # SQLite database & storage
+├── public/             # Static assets (HTML, CSS, JS, Images)
+├── tests/              # Integration tests
+├── .env                # Environment variables (Sensitive)
+├── server.js           # Main Express application
+├── package.json        # Dependencies & Scripts
+└── README.md           # This file
+```
 
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **Backend**: Node.js, Express
-- **Database**: SQLite (better-sqlite3)
-- **Styling**: Custom CSS with modern color palette
+## 🛠 Tech Stack
+- **Runtime**: Node.js (v16+)
+- **Framework**: Express.js
+- **Database**: SQLite (via `better-sqlite3`)
+- **Frontend**: Vanilla HTML5, CSS3, JavaScript
+- **Security**: Helmet, Bcrypt, Express-Rate-Limit
+- **Testing**: Jest, Supertest
 
-## Setup Instructions
+## ⚡ Setup & Installation
+
+### Prerequisites
+- Node.js installed (v16 or higher) -> [Download](https://nodejs.org/)
+- Git (optional)
 
 ### 1. Install Dependencies
-
-```bash
+Open a terminal in the project folder:
+```powershell
 npm install
 ```
 
-### 2. Start the Server
+### 2. Configure Environment
+A `.env` file is used for **local development**. A template is provided in `.env.example`.
 
-```bash
-npm start
+**Local Setup (`.env`):**
+```ini
+PORT=3000
+ADMIN_USERNAME=replace_with_admin_username
+ADMIN_PASSWORD_HASH=$2b$10$...  # (Use generate-hash.js to create)
+SESSION_SECRET=local_dev_secret
+NODE_ENV=development
+SELF_URL=http://localhost:3000/
 ```
 
-The website will be available at `http://localhost:3000`
+**Production Setup (Render/Server):**
+Do not upload `.env`. Instead, set these in your host's "Environment Variables" settings:
+- `NODE_ENV`: `production`
+- `SELF_URL`: `https://www.sydneygs.com/`
+- `ADMIN_USERNAME`: `Admin`
+- `ADMIN_PASSWORD_HASH`: (Your generated hash)
+- `SESSION_SECRET`: (A long random string)
 
-### 3. Access Points
+> **Note**: `.env.example` is a safe template to see what variables are required. `.env` contains your actual local secrets and is ignored by git.
 
-- **Home**: `http://localhost:3000/`
-- **Gallery**: `http://localhost:3000/gallery.html`
-- **Contact**: `http://localhost:3000/contact.html`
-- **Admin Panel**: `http://localhost:3000/admin.html`
+### 3. Run the Application
+- **Development** (Auto-restart):
+  ```powershell
+  npm run dev
+  ```
+- **Production**:
+  ```powershell
+  npm start
+  ```
+- **Test**:
+  ```powershell
+  npm test
+  ```
 
-### Admin Credentials
+Visit `http://localhost:3000` to view the site.
 
-- **Username**: `Amir`
-- **Password**: `amireli21`
+## 🔒 Security & Admin Access
+The admin panel is at `/admin.html`.
+- **Default User**: `replace_with_admin_username`
+- **Default Password**: (As configured. Hashed in `.env`) -> *See internal notes for plain password.*
 
-## Project Structure
+**Security Measures Implemented:**
+- **Credentials**: Passwords are hashed (Bcrypt). No plaintext storage.
+- **Headers**: `Helmet` secures HTTP headers (CSP, X-Frame-Options).
+- **Rate Limiting**: Limits repeated requests to prevent abuse.
+- **Validation**: All inputs are sanitized server-side.
+- **CSRF/Auth**: Authentication uses secure HttpOnly cookies.
 
-```
-sydneygs-website/
-├── public/
-│   ├── css/
-│   │   └── styles.css
-│   ├── js/
-│   │   ├── contact.js
-│   │   └── admin.js
-│   ├── images/
-│   │   └── logo.png (add your logo here)
-│   ├── index.html
-│   ├── gallery.html
-│   ├── contact.html
-│   └── admin.html
-├── data/
-│   └── submissions.db (created automatically)
-├── server.js
-├── package.json
-└── README.md
-```
+## 📊 Database
+The SQLite database is auto-created at `data/submissions.db`.
+**Schema:** `submissions (id, full_name, phone, email, message, submitted_at)`
 
-## Adding Images
+## 🌐 Deployment
+1. **Server**: Use a VPS (DigitalOcean, AWS) or Node host (Heroku, Render).
+2. **Reverse Proxy (Nginx)**: Recommended for SSL/TLS termination.
+   ```nginx
+   server {
+       listen 80;
+       server_name sydneygs.com;
+       location / {
+           proxy_pass http://localhost:3000;
+           proxy_set_header Host $host;
+           # ... standard proxy headers
+       }
+   }
+   ```
+3. **SSL**: Use Certbot (Let's Encrypt) for HTTPS.
+4. **Environment**: Set `NODE_ENV=production` and `SELF_URL=https://sydneygs.com/`.
 
-### Logo
-Place your circular logo (star + Sydney Harbour Bridge) in:
-- `public/images/logo.png`
+## 🤝 Troubleshooting
+- **`npm install` fails**: Ensure Node.js is installed. Try deleting `node_modules` and `package-lock.json` and re-running.
+- **"Address in use"**: Check if another instance is running on port 3000.
+- **Login fails**: Verify `.env` hash matches the password. Use `generate_hash.js` snippet to make a new one if needed.
 
-### Gallery Images
-Add project images to `public/images/` and update `gallery.html`:
-```html
-<div class="gallery-item">
-    <img src="images/your-image.jpg" alt="Description">
-</div>
-```
-
-## Database Schema
-
-The SQLite database (`data/submissions.db`) contains one table:
-
-```sql
-CREATE TABLE submissions (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  full_name TEXT NOT NULL,
-  phone TEXT NOT NULL,
-  email TEXT,
-  message TEXT NOT NULL,
-  submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-## Contact Information
-
-- **Email**: info@sydneygs.com
-- **Mobile**: 0493 332 306
-- **Domain**: sydneygs.com
-
-## Color Palette
-
-- **Primary**: #2563EB (Blue - reliability)
-- **Accent**: #F59E0B (Amber - friendly warmth)
-- **Secondary**: #10B981 (Green - quality)
-- **Dark**: #1F2937
-- **White**: #FFFFFF (dominant)
-
-## Deployment Notes
-
-1. Ensure Node.js is installed on your server
-2. Set up environment variables if needed
-3. Configure your web server to proxy to Node.js
-4. Update social media links in `contact.html`
-5. Add your actual logo and project images
-6. Consider adding HTTPS for production
-
-## Support
-
-For issues or questions, contact the development team.
+## 📜 License
+ISC License. Copyright © 2025 Sydney Gold Star Group.

@@ -1,7 +1,24 @@
-// Check if already logged in
-const authToken = sessionStorage.getItem('authToken');
-if (authToken) {
-  showAdminPanel();
+// Check if already logged in on load
+checkAuth();
+
+async function checkAuth() {
+  try {
+    const response = await fetch('/api/admin/check-auth');
+    const result = await response.json();
+    if (result.authenticated) {
+      showAdminPanel();
+    } else {
+      showLoginForm();
+    }
+  } catch (error) {
+    console.error('Auth check error:', error);
+    showLoginForm();
+  }
+}
+
+function showLoginForm() {
+  document.getElementById('loginSection').style.display = 'block';
+  document.getElementById('adminSection').style.display = 'none';
 }
 
 // Login form handler
@@ -16,6 +33,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
   submitBtn.disabled = true;
   submitBtn.textContent = 'Logging in...';
+  loginMessage.textContent = '';
+  loginMessage.className = 'form-message';
 
   try {
     const response = await fetch('/api/admin/login', {
@@ -26,12 +45,12 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
     const result = await response.json();
 
-    if (result.success) {
-      const authToken = `${username}:${password}`;
-      sessionStorage.setItem('authToken', authToken);
+    if (response.ok && result.success) {
+      // Session cookie is set automatically by server
       showAdminPanel();
+      document.getElementById('loginForm').reset();
     } else {
-      loginMessage.textContent = 'Invalid username or password.';
+      loginMessage.textContent = result.message || 'Invalid username or password.';
       loginMessage.className = 'form-message error';
     }
   } catch (error) {
@@ -45,11 +64,13 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 });
 
 // Logout handler
-document.getElementById('logoutBtn').addEventListener('click', () => {
-  sessionStorage.removeItem('authToken');
-  document.getElementById('loginSection').style.display = 'block';
-  document.getElementById('adminSection').style.display = 'none';
-  document.getElementById('loginForm').reset();
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  try {
+    await fetch('/api/admin/logout', { method: 'POST' });
+    showLoginForm();
+  } catch (error) {
+    console.error('Logout error:', error);
+  }
 });
 
 // Show admin panel and load submissions
@@ -62,17 +83,14 @@ async function showAdminPanel() {
 // Load submissions from server
 async function loadSubmissions() {
   const submissionsBody = document.getElementById('submissionsBody');
-  const authToken = sessionStorage.getItem('authToken');
-
-  if (!authToken) {
-    submissionsBody.innerHTML = '<tr><td colspan="5" class="loading">Not authenticated</td></tr>';
-    return;
-  }
 
   try {
-    const response = await fetch('/api/admin/submissions', {
-      headers: { 'auth': authToken }
-    });
+    const response = await fetch('/api/admin/submissions'); // Cookie sent automatically
+
+    if (response.status === 401) {
+      showLoginForm();
+      return;
+    }
 
     const result = await response.json();
 
@@ -107,6 +125,7 @@ function addHours(date, hours) {
 // Format datetime as UTC+11 (Sydney summer)
 function formatDateTimeSydneyPlus11(utcIsoString) {
   // Parse the UTC timestamp and add +11 hours
+  // Note: Server now stores CURRENT_TIMESTAMP which is usually UTC. 
   const adjusted = addHours(new Date(utcIsoString), 11);
   // Format a readable AU string
   return adjusted.toLocaleString('en-AU', {

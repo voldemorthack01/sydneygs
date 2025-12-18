@@ -39,6 +39,18 @@ describe('Server API Integration', () => {
         expect(res.headers.location).toBe('/contact');
     });
 
+    test('GET /gallery.html should redirect to /gallery', async () => {
+        const res = await req().get('/gallery.html');
+        expect(res.statusCode).toBe(301);
+        expect(res.headers.location).toBe('/gallery');
+    });
+
+    test('GET /admin.html should redirect to /admin', async () => {
+        const res = await req().get('/admin.html');
+        expect(res.statusCode).toBe(301);
+        expect(res.headers.location).toBe('/admin');
+    });
+
     test('POST /api/submit with valid data should succeed', async () => {
         const res = await req().post('/api/submit').send({
             full_name: 'Test Testson',

@@ -24,6 +24,10 @@
   --nav-height: 100px; /* adjust to match your navbar height */
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
     font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
     line-height: 1.6;
